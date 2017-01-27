@@ -6,9 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
 import java.util.Map;
 
@@ -34,7 +32,7 @@ public class NetworkManager {
 
         String url = generateUrlFromParams(params);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+/*        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -49,15 +47,33 @@ public class NetworkManager {
             public void onErrorResponse(VolleyError error) {
 
             }
-        });
+        });*/
+
+        MyGsonRequest gsonRequest = new MyGsonRequest(Request.Method.GET, url, Data.class, new Response.Listener() {
+            @Override
+            public void onResponse(Object response) {
+                if (listener != null) {
+                    Data data = (Data) response;
+                    listener.onResponse(data);
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+
 // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        queue.add(gsonRequest);
     }
 
     private String generateUrlFromParams(Map<String, String> params) {
         String url = PATH;
 
-        for (Map.Entry<String,String> entry : params.entrySet()) {
+        for (Map.Entry<String, String> entry : params.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
